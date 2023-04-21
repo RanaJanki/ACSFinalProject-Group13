@@ -1,0 +1,19 @@
+---
+- name: Ping Private VM via Bastion
+  hosts: PrivateVM
+  gather_facts: False
+
+  vars:
+    ansible_user: ec2-user
+    ansible_ssh_common_args: '-o ProxyCommand="ssh -i week6 -W %h:%p ec2-user@107.21.175.164"'
+
+  tasks:
+    - name: ping PVM1
+      shell: ping -c 1 -w 2 10.1.6.254
+      when: inventory_hostname == "PVM1"
+      ignore_errors: true
+
+    - name: ping PVM2
+      shell: ping -c 1 -w 2 10.1.5.7
+      when: inventory_hostname == "PVM2"
+      ignore_errors: true
