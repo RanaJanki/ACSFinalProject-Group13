@@ -1,0 +1,66 @@
+---
+- name: Configure Apache Web Server
+  hosts: tag_Vishal
+  become: true
+  vars:
+    ansible_user: ec2-user 
+    ansible_ssh_private_key_file: week6
+    Name: "Ansible"
+    owner: "Terraform"
+    
+
+  tasks:
+    # - name: Delete /var/www/html/index.html 
+    #   file:
+    #     path: /var/www/html/index.html
+    #     state: absent
+
+    - name: Create files directory
+      file:
+        path: /var/www/html/files
+        state: directory
+
+    - name: Install httpd
+      yum:
+        name: httpd
+        state: present
+
+    - name: Download index.html
+      get_url:
+        url: https://acs1129.s3.amazonaws.com/index.html
+        dest: /var/www/html/index.html
+
+
+
+    - name: Download flower images
+      get_url:
+        url: "https://acs1129.s3.amazonaws.com/files/{{ item }}.jpeg"
+        dest: "/var/www/html/files/{{ item }}.jpeg"
+      loop:
+        - daffodil
+        - daisy
+        - hibiscus
+        - lilly
+        - rose
+        - sunflower
+        - tulip
+      
+    - name: Replace owner name
+      become: true
+      become_user: root
+      replace:
+        path: /var/www/html/index.html
+        regexp: '{{ owner }}'
+        replace: '{{ Name }}'
+    
+    
+    - name: Start httpd service
+      systemd:
+        name: httpd
+        state: started
+        enabled: yes  
+        
+    
+        
+
+

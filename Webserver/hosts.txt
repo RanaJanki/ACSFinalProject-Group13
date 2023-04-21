@@ -1,0 +1,35 @@
+[Bastion]
+BastionVM ansible_host=107.21.175.164
+
+[PublicVM]
+PublicVM1 ansible_host=52.90.188.102
+PublicVM2 ansible_host=107.23.45.226 
+PublicVM3 ansible_host=3.235.240.36
+
+[PublicVM:vars]
+ansible_user = ec2-user 
+ansible_ssh_private_key_file = week6
+[Bastion:vars]
+ansible_user = ec2-user 
+ansible_ssh_private_key_file = week6
+ansible_ssh_common_args='-o ProxyCommand="ssh -i week6 ec2-user@10.1.6.254"' 
+
+
+
+[PrivateVM]
+PVM1 ansible_host=10.1.6.254
+PVM2 ansible_host=10.1.5.7 
+
+[PrivateVM:vars]
+ansible_user = ec2-user 
+ansible_ssh_private_key_file = week6
+ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:80 107.21.175.164"' 
+
+
+
+[servers_all:children]
+Bastion
+PublicVM
+PublicVM
+
+
